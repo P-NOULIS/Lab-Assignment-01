@@ -38,3 +38,19 @@ jobs:
 
       - name: Run Unit Tests (JUnit)
         run: mvn test
+
+      # Build the .jar file
+      - name: Build Jar
+        run: mvn clean package --file pom.xml
+
+      # Docker Login using GitHub Secrets
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Build Docker Image
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/my-java-app:latest .
+
+      # Push Docker Image to Docker Hub
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/my-java-app:latest
